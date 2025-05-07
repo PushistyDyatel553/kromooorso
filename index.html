@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Telegram WebApp InitData Viewer</title>
+  <style>
+    body {
+      font-family: monospace;
+      padding: 20px;
+      background: #f7f7f7;
+    }
+    pre {
+      background: #fff;
+      padding: 1em;
+      border: 1px solid #ccc;
+      overflow-x: auto;
+    }
+  </style>
+</head>
+<body>
+  <h1>Telegram WebApp InitData</h1>
+  <pre id="output">Загрузка...</pre>
+
+  <script>
+    function parseQueryString(queryString) {
+      const params = new URLSearchParams(queryString);
+      const obj = {};
+      for (const [key, value] of params.entries()) {
+        obj[key] = value;
+      }
+      return obj;
+    }
+
+    function displayInitData(data) {
+      const pre = document.getElementById("output");
+      pre.textContent = JSON.stringify(data, null, 2);
+    }
+
+    (function () {
+      try {
+        if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData) {
+          // реальное использование внутри Telegram WebApp
+          const initDataRaw = window.Telegram.WebApp.initData;
+          const initDataUnsafe = parseQueryString(initDataRaw);
+          displayInitData({
+            raw: initDataRaw,
+            parsed: initDataUnsafe,
+          });
+        } else {
+          // тестовый режим — парсим initData из URL
+          const urlParams = new URLSearchParams(window.location.search);
+          const initDataRaw = urlParams.get("initData") || "";
+          const initDataUnsafe = parseQueryString(initDataRaw);
+          displayInitData({
+            raw: initDataRaw,
+            parsed: initDataUnsafe,
+          });
+        }
+      } catch (err) {
+        document.getElementById("output").textContent = "Ошибка: " + err.message;
+      }
+    })();
+  </script>
+</body>
+</html>
