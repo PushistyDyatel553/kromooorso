@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>Telegram WebApp InitData Viewer</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     body {
       font-family: monospace;
@@ -38,24 +39,16 @@
 
     (function () {
       try {
-        if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData) {
-          // реальное использование внутри Telegram WebApp
-          const initDataRaw = window.Telegram.WebApp.initData;
-          const initDataUnsafe = parseQueryString(initDataRaw);
-          displayInitData({
-            raw: initDataRaw,
-            parsed: initDataUnsafe,
-          });
-        } else {
-          // тестовый режим — парсим initData из URL
-          const urlParams = new URLSearchParams(window.location.search);
-          const initDataRaw = urlParams.get("initData") || "";
-          const initDataUnsafe = parseQueryString(initDataRaw);
-          displayInitData({
-            raw: initDataRaw,
-            parsed: initDataUnsafe,
-          });
-        }
+        Telegram.WebApp.ready();
+
+        const initDataRaw = Telegram.WebApp.initData || "";
+        const parsed = parseQueryString(initDataRaw);
+
+        displayInitData({
+          source: "Telegram",
+          raw: initDataRaw,
+          parsed,
+        });
       } catch (err) {
         document.getElementById("output").textContent = "Ошибка: " + err.message;
       }
